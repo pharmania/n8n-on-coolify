@@ -12,11 +12,23 @@ services:
       - N8N_HOST=atm.pharmania.fr
       - N8N_PORT=5678
       - WEBHOOK_URL=https://atm.pharmania.fr/
+      # --- TLS pour Postgres Supabase ---
+      - NODE_EXTRA_CA_CERTS=/certs/supabase-ca.crt
+      - SUPABASE_CA_B64=${SUPABASE_CA_B64}
+      # (optionnel, mais utile si IPv6 te joue des tours)
+      - NODE_OPTIONS=--dns-result-order=ipv4first
     volumes:
       - n8n_data:/home/node/.n8n
+      - n8n_certs:/certs
+    # Écrit le certificat depuis la variable SUPABASE_CA_B64, puis lance n8n
+    command: >
+      sh -lc "mkdir -p /certs &&
+              node -e \"require('fs').writeFileSync('/certs/supabase-ca.crt', Buffer.from(process.env.SUPABASE_CA_B64,'base64'))\" &&
+              exec n8n start"
     labels:
       - "coolify.domain=atm.pharmania.fr"
       - "coolify.ssl=true"
 
 volumes:
   n8n_data:
+  n8n_certs:
