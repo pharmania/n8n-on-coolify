@@ -12,11 +12,25 @@ services:
       - N8N_HOST=atm.pharmania.fr
       - N8N_PORT=5678
       - WEBHOOK_URL=https://atm.pharmania.fr/
+      # --- TLS Supabase (important) ---
+      - NODE_EXTRA_CA_CERTS=/certs/supabase-ca.crt
+      - SUPABASE_CA_B64=${SUPABASE_CA_B64}     # <- secret Coolify (base64 du .crt)
+      - NODE_OPTIONS=--dns-result-order=ipv4first   # (optionnel)
     volumes:
       - n8n_data:/home/node/.n8n
+      - n8n_certs:/certs                           # volume persistant pour le CA
+    # Utilise un shell pour chaîner, mais on NE touche pas à `mkdir` BusyBox
+    entrypoint: ["/bin/sh","-lc"]
+    command: >
+      node -e "const fs=require('fs');
+               fs.mkdirSync('/certs',{recursive:true});
+               if(!process.env.SUPABASE_CA_B64){console.error('Missing SUPABASE_CA_B64');process.exit(1)}
+               fs.writeFileSync('/certs/supabase-ca.crt', Buffer.from(process.env.SUPABASE_CA_B64,'base64'))"
+      && exec n8n start
     labels:
       - "coolify.domain=atm.pharmania.fr"
       - "coolify.ssl=true"
 
 volumes:
   n8n_data:
+  n8n_certs:
