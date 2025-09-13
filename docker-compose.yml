@@ -9,13 +9,14 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=${N8N_USER}
       - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+
       - N8N_HOST=atm.pharmania.fr
       - N8N_PROTOCOL=https
       - N8N_PORT=5678
       - WEBHOOK_URL=https://atm.pharmania.fr
       - N8N_PROXY_HOPS=1
-      # Optionnel :
-      # - N8N_EDITOR_BASE_URL=https://atm.pharmania.fr
+      - N8N_EDITOR_BASE_URL=https://atm.pharmania.fr   # ← important
+
     volumes:
       - n8n_data:/home/node/.n8n
     labels:
