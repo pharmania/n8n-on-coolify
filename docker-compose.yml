@@ -5,13 +5,20 @@ services:
     image: n8nio/n8n:1.108.1
     ports:
       - "5678:5678"
-    environment:
-      - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=${N8N_USER}
-      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
-      - N8N_HOST=atm.pharmania.fr
-      - N8N_PORT=5678
-      - WEBHOOK_URL=https://atm.pharmania.fr/
+environment:
+  - N8N_BASIC_AUTH_ACTIVE=true
+  - N8N_BASIC_AUTH_USER=${N8N_USER}
+  - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+
+  - N8N_HOST=atm.pharmania.fr
+  - N8N_PROTOCOL=https              # ← (nouveau) force l’URL en https
+  - N8N_PORT=5678
+
+  - WEBHOOK_URL=https://atm.pharmania.fr  # ← (corrigé) sans slash final
+  - N8N_PROXY_HOPS=1                # ← (nouveau) recommandé derrière proxy
+  # Optionnel mais utile pour les liens UI générés :
+  # - N8N_EDITOR_BASE_URL=https://atm.pharmania.fr
+
     volumes:
       - n8n_data:/home/node/.n8n
     labels:
